@@ -15,4 +15,4 @@ assets-dev:
 assets-watch:
 	docker-compose exec node yarn run watch
 php_container:
-    docker exec -ti app_php-fpm-1 bash
+    docker exec -ti app_php-fpm_1 bash
