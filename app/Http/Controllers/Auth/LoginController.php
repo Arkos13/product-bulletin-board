@@ -50,6 +50,7 @@ class LoginController extends Controller
         if ($authenticate) {
             $request->session()->regenerate();
             $this->clearLoginAttempts($request);
+            /** @var User $user*/
             $user = Auth::user();
             if ($user->status !== User::STATUS_ACTIVE) {
                 Auth::logout();
