@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Mail\VerifyMail;
 use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -41,6 +43,33 @@ class RegisterController extends Controller
     }
 
     /**
+     * @param $token
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function verify($token)
+    {
+        /** @var User $user */
+        $user = User::query()->where('verify_token', $token)->first();
+
+        if (!$user) {
+            return redirect()->route('login')
+                ->with('error', 'Sorry your link cannot be identified.');
+        }
+
+        if ($user->status !== User::STATUS_WAIT) {
+            return redirect()->route('login')
+                ->with('error', 'Your email is already verified.');
+        }
+
+        $user->status = User::STATUS_ACTIVE;
+        $user->verify_token = null;
+        $user->save();
+
+        return redirect()->route('login')
+            ->with('success', 'Your e-mail is verified. You can now login.');
+    }
+
+    /**
      * Get a validator for an incoming registration request.
      *
      * @param  array  $data
@@ -67,6 +96,24 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'verify_token' => Str::random(),
+            'status' => User::STATUS_WAIT,
         ]);
+
+        Mail::to($user->email)->send(new VerifyMail($user));
+
+        return $user;
+    }
+
+    /**
+     * @param Request $request
+     * @param $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function registered(Request $request, $user)
+    {
+        $this->guard()->logout();
+        return redirect()->route('login')
+            ->with('success', 'Check your email and click on the link to verify.');
     }
 }
