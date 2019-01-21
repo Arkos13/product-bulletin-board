@@ -9,6 +9,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string $password
+ * @property string $verify_token
  * @property string $status
  */
 class User extends Authenticatable
@@ -24,7 +26,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'status'
     ];
 
     /**
@@ -35,4 +37,32 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * @return bool
+     */
+    public function isWait(): bool
+    {
+        return $this->status === self::STATUS_WAIT;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function verify(): void
+    {
+        if (!$this->isWait()) {
+            throw new \DomainException('User is already verified.');
+        }
+
+        $this->update([
+            'status' => self::STATUS_ACTIVE,
+            'verify_token' => null,
+        ]);
+    }
 }
