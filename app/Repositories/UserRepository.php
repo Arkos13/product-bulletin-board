@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Entity\User;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
 use Prettus\Repository\Eloquent\BaseRepository;
 
@@ -31,6 +32,7 @@ class UserRepository extends BaseRepository
             'email' => $email,
             'password' => bcrypt($password),
             'verify_token' => Str::uuid(),
+            'role' => User::ROLE_USER,
             'status' => User::STATUS_WAIT,
         ]);
     }
@@ -46,8 +48,37 @@ class UserRepository extends BaseRepository
             'name' => $name,
             'email' => $email,
             'password' => bcrypt(Str::random()),
+            'role' => User::ROLE_USER,
             'status' => User::STATUS_ACTIVE,
         ]);
     }
 
+    /**
+     * @param array $filters
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getUsers(array $filters)
+    {
+        /** @var Builder $query*/
+        $query = User::query()->orderByDesc('id');
+
+        if (!empty($filters['id'])) {
+            $query->where('id', $filters['id']);
+        }
+
+        if (!empty($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+        if (!empty($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+        if (!empty($filters['role'])) {
+            $query->where('role', $filters['role']);
+        }
+
+        return $query->paginate(20);
+    }
 }

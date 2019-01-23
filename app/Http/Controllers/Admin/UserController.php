@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\Users\{
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Services\Auth\RegisterService;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -27,12 +28,22 @@ class UserController extends Controller
     }
 
     /**
+     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::query()->orderByDesc('id')->paginate(20);
-        return view('admin.users.index', compact('users'));
+        $users = UserRepository::getUsers($request->all());
+
+        $statuses = [
+            User::STATUS_WAIT => 'Waiting',
+            User::STATUS_ACTIVE => 'Active',
+        ];
+        $roles = [
+            User::ROLE_USER => 'User',
+            User::ROLE_ADMIN => 'Admin',
+        ];
+        return view('admin.users.index', compact('users', 'statuses', 'roles'));
     }
 
     /**
@@ -72,7 +83,11 @@ class UserController extends Controller
             User::STATUS_WAIT => 'Waiting',
             User::STATUS_ACTIVE => 'Active'
         ];
-        return view('admin.users.edit', compact('user', 'statuses'));
+        $roles = [
+            User::ROLE_USER => 'User',
+            User::ROLE_ADMIN => 'Admin',
+        ];
+        return view('admin.users.edit', compact('user', 'statuses', 'roles'));
     }
 
     /**
@@ -83,6 +98,9 @@ class UserController extends Controller
     public function update(UpdateRequest $request, User $user)
     {
         $user->update($request->only(['name', 'email']));
+        if ($request['role'] !== $user->role) {
+            $user->changeRole($request['role']);
+        }
         return redirect()->route('admin.users.show', $user);
     }
 

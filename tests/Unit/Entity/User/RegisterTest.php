@@ -26,6 +26,7 @@ class RegisterTest extends TestCase
         self::assertNotEquals($psw, $user->password);
         self::assertTrue($user->isWait());
         self::assertFalse($user->isActive());
+        self::assertFalse($user->isAdmin());
     }
 
     public function testVerify(): void
