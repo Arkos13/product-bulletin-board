@@ -30,6 +30,7 @@ class User extends Authenticatable
 
     public const ROLE_USER = 'user';
     public const ROLE_ADMIN = 'admin';
+    public const ROLE_MODERATOR = 'moderator';
 
     /**
      * The attributes that are mass assignable.
@@ -54,6 +55,18 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * @return array
+     */
+    public static function rolesList(): array
+    {
+        return [
+            self::ROLE_USER => 'User',
+            self::ROLE_ADMIN => 'Admin',
+            self::ROLE_MODERATOR => 'Moderator'
+        ];
+    }
 
     /**
      * @return bool
@@ -88,7 +101,7 @@ class User extends Authenticatable
      */
     public function changeRole(string $role): void
     {
-        if (!in_array($role, [self::ROLE_USER, self::ROLE_ADMIN], true)) {
+        if (!in_array($role, self::rolesList(), true)) {
             throw new \InvalidArgumentException("Undefined role {$role}");
         }
 
@@ -105,6 +118,14 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isModerator(): bool
+    {
+        return $this->role === self::ROLE_MODERATOR;
     }
 
     /**
