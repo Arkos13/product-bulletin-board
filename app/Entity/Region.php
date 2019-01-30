@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @property int $id
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $parent_id
  * @property Region $parent
  * @property Region[] $children
+ * @method static Builder roots()
  */
 class Region extends Model
 {
@@ -27,5 +29,22 @@ class Region extends Model
     public function children()
     {
         return $this->hasMany(static::class, 'parent_id', 'id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress(): string
+    {
+        return ($this->parent ? $this->parent->getAddress() . ', ' : '') . $this->name;
+    }
+
+    /**
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeRoots(Builder $query)
+    {
+        return $query->where('parent_id', null);
     }
 }

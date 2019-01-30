@@ -64,6 +64,14 @@ class Attribute extends Model
     /**
      * @return bool
      */
+    public function isNumber(): bool
+    {
+        return $this->isInteger() || $this->isFloat();
+    }
+
+    /**
+     * @return bool
+     */
     public function isSelect(): bool
     {
         return count($this->variants) > 0;
