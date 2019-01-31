@@ -9,6 +9,14 @@ use App\Http\Controllers\Controller;
 class CategoryController extends Controller
 {
     /**
+     * CategoryController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('can:manage-adverts-categories');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

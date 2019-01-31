@@ -27,6 +27,7 @@ class AdvertController extends Controller
     public function __construct(AdvertService $advertService)
     {
         $this->advertService = $advertService;
+        $this->middleware('can:manage-adverts');
     }
 
     /**

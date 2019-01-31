@@ -11,6 +11,14 @@ use App\Http\Controllers\Controller;
 class RegionController extends Controller
 {
     /**
+     * RegionController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('can:manage-regions');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

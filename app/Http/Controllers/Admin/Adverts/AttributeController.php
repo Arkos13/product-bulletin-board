@@ -10,6 +10,15 @@ use App\Http\Controllers\Controller;
 
 class AttributeController extends Controller
 {
+
+    /**
+     * AttributeController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('can:manage-adverts-categories');
+    }
+
     /**
      * Show the form for creating a new resource.
      * @param Category $category

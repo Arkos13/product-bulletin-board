@@ -231,7 +231,7 @@ class Advert extends Model
      */
     public function scopeForCategory(Builder $query, Category $category)
     {
-        return $query->where('category_id', array_merge(
+        return $query->whereIn('category_id', array_merge(
             [$category->id],
             $category->descendants()->pluck('id')->toArray()
         ));
