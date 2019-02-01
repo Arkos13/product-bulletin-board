@@ -190,3 +190,9 @@ Breadcrumbs::register('adverts.show', function (Crumbs $crumbs, Advert $advert) 
     $crumbs->parent('adverts.index', adverts_path($advert->region, $advert->category));
     $crumbs->push($advert->title, route('adverts.show', $advert));
 });
+
+// Favorites
+Breadcrumbs::register('cabinet.favorites.index', function (Crumbs $crumbs) {
+    $crumbs->parent('cabinet.home');
+    $crumbs->push('Adverts', route('cabinet.favorites.index'));
+});

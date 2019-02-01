@@ -7,6 +7,7 @@ use App\Entity\Adverts\Category;
 use App\Entity\Region;
 use App\Http\Controllers\Controller;
 use App\Http\Router\AdvertsPath;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AdvertController extends Controller
@@ -43,7 +44,8 @@ class AdvertController extends Controller
         if (!($advert->isActive() || Gate::allows('show-advert', $advert))) {
             abort(403);
         }
-        return view('adverts.show', compact('advert'));
+        $user = Auth::user();
+        return view('adverts.show', compact('advert', 'user'));
     }
 
     /**
