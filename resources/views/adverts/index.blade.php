@@ -1,6 +1,8 @@
 @extends('layouts.app')
+@section('search')
+    @include('layouts.partials.search', ['category' => $category, 'route' => '?'])
+@endsection
 @section('content')
-    <p><a href="{{ route('cabinet.adverts.create') }}" class="btn btn-success">Add Advert</a></p>
     @if ($categories)
         <div class="card card-default mb-3">
             <div class="card-header">
@@ -16,7 +18,10 @@
                         <div class="col-md-3">
                             <ul class="list-unstyled">
                                 @foreach ($chunk as $current)
-                                    <li><a href="{{ route('adverts.index', adverts_path($region, $current)) }}">{{ $current->name }}</a></li>
+                                    <li>
+                                        <a href="{{ route('adverts.index', array_merge(['adverts_path' => adverts_path($region, $current)], request()->all())) }}">{{ $current->name }}</a>
+                                        ({{ $categoriesCounts[$current->id] ?? 0 }})
+                                    </li>
                                 @endforeach
                             </ul>
                         </div>
@@ -40,7 +45,10 @@
                         <div class="col-md-3">
                             <ul class="list-unstyled">
                                 @foreach ($chunk as $current)
-                                    <li><a href="{{ route('adverts.index', adverts_path($current, $category)) }}">{{ $current->name }}</a></li>
+                                    <li>
+                                        <a href="{{ route('adverts.index', array_merge(['adverts_path' => adverts_path($current, $category)], request()->all())) }}">{{ $current->name }}</a>
+                                        ({{ $regionsCounts[$current->id] ?? 0 }})
+                                    </li>
                                 @endforeach
                             </ul>
                         </div>
