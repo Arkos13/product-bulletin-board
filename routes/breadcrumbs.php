@@ -7,6 +7,7 @@ use App\Entity\Adverts\Category;
 use App\Entity\Adverts\Attribute;
 use App\Entity\Adverts\Advert\Advert;
 use App\Http\Router\AdvertsPath;
+use App\Entity\Banner\Banner;
 
 Breadcrumbs::register('home', function (Crumbs $crumbs) {
     $crumbs->push('Home', route('home'));
@@ -195,4 +196,52 @@ Breadcrumbs::register('adverts.show', function (Crumbs $crumbs, Advert $advert) 
 Breadcrumbs::register('cabinet.favorites.index', function (Crumbs $crumbs) {
     $crumbs->parent('cabinet.home');
     $crumbs->push('Adverts', route('cabinet.favorites.index'));
+});
+
+// Cabinet Banners
+Breadcrumbs::register('cabinet.banners.index', function (Crumbs $crumbs) {
+    $crumbs->parent('cabinet.home');
+    $crumbs->push('Banners', route('cabinet.banners.index'));
+});
+Breadcrumbs::register('cabinet.banners.show', function (Crumbs $crumbs, Banner $banner) {
+    $crumbs->parent('cabinet.banners.index');
+    $crumbs->push($banner->name, route('cabinet.banners.show', $banner));
+});
+Breadcrumbs::register('cabinet.banners.edit', function (Crumbs $crumbs, Banner $banner) {
+    $crumbs->parent('cabinet.banners.show', $banner);
+    $crumbs->push('Edit', route('cabinet.banners.edit', $banner));
+});
+Breadcrumbs::register('cabinet.banners.file', function (Crumbs $crumbs, Banner $banner) {
+    $crumbs->parent('cabinet.banners.show', $banner);
+    $crumbs->push('File', route('cabinet.banners.file', $banner));
+});
+Breadcrumbs::register('cabinet.banners.create', function (Crumbs $crumbs) {
+    $crumbs->parent('cabinet.banners.index');
+    $crumbs->push('Create', route('cabinet.banners.create'));
+});
+Breadcrumbs::register('cabinet.banners.create.region', function (Crumbs $crumbs, Category $category, Region $region = null) {
+    $crumbs->parent('cabinet.banners.create');
+    $crumbs->push($category->name, route('cabinet.banners.create.region', [$category, $region]));
+});
+Breadcrumbs::register('cabinet.banners.create.banner', function (Crumbs $crumbs, Category $category, Region $region = null) {
+    $crumbs->parent('cabinet.banners.create.region', $category, $region);
+    $crumbs->push($region ? $region->name : 'All', route('cabinet.banners.create.banner', [$category, $region]));
+});
+
+// Banners
+Breadcrumbs::register('admin.banners.index', function (Crumbs $crumbs) {
+    $crumbs->parent('admin.home');
+    $crumbs->push('Banners', route('admin.banners.index'));
+});
+Breadcrumbs::register('admin.banners.show', function (Crumbs $crumbs, Banner $banner) {
+    $crumbs->parent('admin.banners.index');
+    $crumbs->push($banner->name, route('admin.banners.show', $banner));
+});
+Breadcrumbs::register('admin.banners.edit', function (Crumbs $crumbs, Banner $banner) {
+    $crumbs->parent('admin.banners.show', $banner);
+    $crumbs->push('Edit', route('admin.banners.edit', $banner));
+});
+Breadcrumbs::register('admin.banners.reject', function (Crumbs $crumbs, Banner $banner) {
+    $crumbs->parent('admin.banners.show', $banner);
+    $crumbs->push('Reject', route('admin.banners.reject', $banner));
 });

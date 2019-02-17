@@ -15,3 +15,24 @@ $(document).on('click', '.phone-button', function () {
         console.error(error);
     });
 });
+
+$('.banner').each(function () {
+    let block = $(this);
+    let url = block.data('url');
+    let format = block.data('format');
+    let category = block.data('category');
+    let region = block.data('region');
+
+    axios.get(url, {
+        params: {
+                format: format,
+                category: category,
+                region: region
+            }})
+        .then(function (response) {
+            block.html(response.data);
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+});
