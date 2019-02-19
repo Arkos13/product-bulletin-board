@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Cabinet;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Http\Controllers\Controller;
 use App\Services\Sms\SmsSender;
 use Carbon\Carbon;

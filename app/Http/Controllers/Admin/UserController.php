@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Http\Requests\Admin\Users\{
     CreateRequest, UpdateRequest
 };

@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
 use Prettus\Repository\Eloquent\BaseRepository;
@@ -35,6 +35,29 @@ class UserRepository extends BaseRepository
             'role' => User::ROLE_USER,
             'status' => User::STATUS_WAIT,
         ]);
+    }
+
+    /**
+     * @param string $network
+     * @param string $identity
+     * @return User
+     */
+    public static function registerByNetwork(string $network, string $identity): User
+    {
+        /** @var User $user*/
+        $user = User::query()->create([
+            'name' => $identity,
+            'email' => null,
+            'password' => null,
+            'verify_token' => null,
+            'role' => User::ROLE_USER,
+            'status' => User::STATUS_ACTIVE,
+        ]);
+        $user->networks()->create([
+            'network' => $network,
+            'identity' => $identity,
+        ]);
+        return $user;
     }
 
     /**

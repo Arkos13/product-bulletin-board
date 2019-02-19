@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\User;
 
 use App\Entity\Adverts\Advert\Advert;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Carbon\Carbon;
@@ -21,6 +22,8 @@ use Carbon\Carbon;
  * @property string $role
  * @property string $status
  * @property boolean $phone_auth
+ * @property Network[] networks
+ * @method Builder byNetwork(string $network, string $identity)
  */
 class User extends Authenticatable
 {
@@ -259,5 +262,26 @@ class User extends Authenticatable
     public function favorites()
     {
         return $this->belongsToMany(Advert::class, 'advert_favorites', 'user_id', 'advert_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function networks()
+    {
+        return $this->hasMany(Network::class, 'user_id', 'id');
+    }
+
+    /**
+     * @param Builder $query
+     * @param string $network
+     * @param string $identity
+     * @return Builder
+     */
+    public function scopeByNetwork(Builder $query, string $network, string $identity): Builder
+    {
+        return $query->whereHas('networks', function(Builder $query) use ($network, $identity) {
+            $query->where('network', $network)->where('identity', $identity);
+        });
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Middleware;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use Illuminate\Support\Facades\Auth;
 
 class FilledProfile
