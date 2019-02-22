@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Carbon\Carbon;
+use Laravel\Passport\HasApiTokens;
 
 /**
  * @property int $id
@@ -27,7 +28,7 @@ use Carbon\Carbon;
  */
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     public const STATUS_WAIT = 'wait';
     public const STATUS_ACTIVE = 'active';
@@ -283,5 +284,14 @@ class User extends Authenticatable
         return $query->whereHas('networks', function(Builder $query) use ($network, $identity) {
             $query->where('network', $network)->where('identity', $identity);
         });
+    }
+
+    /**
+     * @param string $identifier
+     * @return Builder|\Illuminate\Database\Eloquent\Model|null|object
+     */
+    public function findForPassport(string $identifier)
+    {
+        return self::query()->where('email', $identifier)->where('status', self::STATUS_ACTIVE)->first();
     }
 }

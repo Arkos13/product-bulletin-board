@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\Banner\CostCalculator;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,5 +30,7 @@ class AppServiceProvider extends ServiceProvider
             $config = $app->make('config')->get('banner');
             return new CostCalculator($config['price']);
         });
+
+        Passport::ignoreMigrations();
     }
 }
