@@ -7,6 +7,7 @@ use App\Entity\User\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Entity\Adverts\Advert\Dialog\Dialog;
 
 /**
  * @property int $id
@@ -260,10 +261,85 @@ class Advert extends Model
         return $query->whereIn('region_id', $ids);
     }
 
+    /**
+     * @param Builder $query
+     * @param User $user
+     * @return Builder
+     */
     public function scopeFavoredByUser(Builder $query, User $user)
     {
         return $query->whereHas('favorites', function(Builder $query) use ($user) {
             $query->where('user_id', $user->id);
         });
+    }
+
+    /**
+     * @param int $fromId
+     * @param string $message
+     */
+    public function writeClientMessage(int $fromId, string $message)
+    {
+        $this->getOrCreateDialogWith($fromId)->writeMessageByClient($fromId, $message);
+    }
+
+    /**
+     * @param int $toId
+     * @param string $message
+     */
+    public function writeOwnerMessage(int $toId, string $message)
+    {
+        $this->getDialogWith($toId)->writeMessageByOwner($this->user_id, $message);
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function readClientMessages(int $userId)
+    {
+        $this->getDialogWith($userId)->readByClient();
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function readOwnerMessages(int $userId)
+    {
+        $this->getDialogWith($userId)->readByOwner();
+    }
+
+    /**
+     * @param int $userId
+     * @return Dialog
+     */
+    private function getDialogWith(int $userId): Dialog
+    {
+        $dialog = $this->dialogs()->where([
+            'user_id' => $this->user_id,
+            'client_id' => $userId,
+        ])->first();
+        if (!$dialog) {
+            throw new \DomainException('Dialog is not found.');
+        }
+        return $dialog;
+    }
+
+    /**
+     * @param int $userId
+     * @return Dialog
+     */
+    private function getOrCreateDialogWith(int $userId): Dialog
+    {
+        if ($userId === $this->user_id) {
+            throw new \DomainException('Cannot send message to myself.');
+        }
+        return $this->dialogs()->firstOrCreate([
+            'user_id' => $this->user_id,
+            'client_id' => $userId,
+        ]);
+    }
+
+    public function dialogs()
+    {
+        return $this->hasMany(Dialog::class, 'advert_id', 'id');
     }
 }
