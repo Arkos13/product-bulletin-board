@@ -8,6 +8,7 @@ use App\Entity\User\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
+use App\Entity\Ticket\Ticket;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -71,6 +72,14 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('manage-pages', function(User $user) {
             return $user->isAdmin();
+        });
+
+        Gate::define('manage-tickets', function (User $user) {
+            return $user->isAdmin() || $user->isModerator();
+        });
+
+        Gate::define('manage-own-ticket', function (User $user, Ticket $ticket) {
+            return $ticket->user_id === $user->id;
         });
     }
 }
