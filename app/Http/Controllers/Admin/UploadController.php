@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UploadController extends Controller
 {
@@ -18,6 +19,7 @@ class UploadController extends Controller
             'file' => 'required|image|mimes:jpg,jpeg,png',
         ]);
         $file = $request->file('file');
-        return '/storage/' . $file->store('images', 'public');
+        $path = $file->store('images', 'public');
+        return Storage::disk('public')->url($path);
     }
 }

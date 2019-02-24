@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Event;
+use App\Events\Advert\ModerationPassed;
+use App\Listeners\Advert\AdvertChangedListener;
+use App\Listeners\Advert\ModerationPassedListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,17 +20,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        ModerationPassed::class => [
+            AdvertChangedListener::class,
+            ModerationPassedListener::class,
+        ],
     ];
-
-    /**
-     * Register any events for your application.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        parent::boot();
-
-        //
-    }
 }

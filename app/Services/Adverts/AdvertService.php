@@ -2,12 +2,12 @@
 
 namespace App\Services\Adverts;
 
-
 use App\Entity\Adverts\Advert\Advert;
 use App\Entity\Adverts\Attribute;
 use App\Entity\Adverts\Category;
 use App\Entity\Region;
 use App\Entity\User\User;
+use App\Events\Advert\ModerationPassed;
 use App\Http\Requests\Adverts\AttributesRequest;
 use App\Http\Requests\Adverts\CreateRequest;
 use App\Http\Requests\Adverts\PhotoRequest;
@@ -78,7 +78,7 @@ class AdvertService
         DB::transaction(function () use ($request, $advert) {
             foreach ($request['files'] as $file) {
                 $advert->photos()->create([
-                    'file' => $file->store('adverts')
+                    'file' => $file->store('adverts', 'public')
                 ]);
             }
             $advert->update();
@@ -120,6 +120,7 @@ class AdvertService
         /** @var Advert $advert */
         $advert = $this->getAdvert($id);
         $advert->moderate(Carbon::now());
+        event(new ModerationPassed($advert));
     }
 
     /**

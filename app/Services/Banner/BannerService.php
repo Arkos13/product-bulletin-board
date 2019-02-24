@@ -251,7 +251,7 @@ class BannerService
             throw new \DomainException('Unable to remove the banner.');
         }
         $banner->delete();
-        Storage::delete('public/' . $banner->file);
+        Storage::disk('public')->delete($banner->file);
     }
 
     /**
@@ -262,6 +262,6 @@ class BannerService
     {
         $banner = $this->getBanner($id);
         $banner->delete();
-        Storage::delete('public/' . $banner->file);
+        Storage::disk('public')->delete($banner->file);
     }
 }

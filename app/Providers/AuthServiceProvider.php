@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
 use App\Entity\Ticket\Ticket;
+use Laravel\Horizon\Horizon;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -31,10 +32,17 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
         $this->registerPermissions();
         Passport::routes();
+        Horizon::auth(function () {
+            return Gate::allows('horizon');
+        });
     }
 
     private function registerPermissions()
     {
+        Gate::define('horizon', function (User $user) {
+            return $user->isAdmin() || $user->isModerator();
+        });
+
         Gate::define('admin-panel', function (User $user) {
             return $user->isAdmin() || $user->isModerator();
         });
