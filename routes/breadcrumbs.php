@@ -3,11 +3,13 @@
 use DaveJamesMiller\Breadcrumbs\BreadcrumbsGenerator as Crumbs;
 use App\Entity\User\User;
 use App\Entity\Region;
+use App\Entity\Page;
 use App\Entity\Adverts\Category;
 use App\Entity\Adverts\Attribute;
 use App\Entity\Adverts\Advert\Advert;
 use App\Http\Router\AdvertsPath;
 use App\Entity\Banner\Banner;
+use App\Http\Router\PagePath;
 
 Breadcrumbs::register('home', function (Crumbs $crumbs) {
     $crumbs->push('Home', route('home'));
@@ -34,6 +36,15 @@ Breadcrumbs::register('password.request', function (Crumbs $crumbs) {
 Breadcrumbs::register('password.reset', function (Crumbs $crumbs) {
     $crumbs->parent('password.request');
     $crumbs->push('Change', route('password.reset'));
+});
+
+Breadcrumbs::register('page', function (Crumbs $crumbs, PagePath $path) {
+    if ($parent = $path->page->parent) {
+        $crumbs->parent('page', $path->withPage($path->page->parent));
+    } else {
+        $crumbs->parent('home');
+    }
+    $crumbs->push($path->page->title, route('page', $path));
 });
 
 Breadcrumbs::register('cabinet.home', function (Crumbs $crumbs) {
@@ -244,4 +255,27 @@ Breadcrumbs::register('admin.banners.edit', function (Crumbs $crumbs, Banner $ba
 Breadcrumbs::register('admin.banners.reject', function (Crumbs $crumbs, Banner $banner) {
     $crumbs->parent('admin.banners.show', $banner);
     $crumbs->push('Reject', route('admin.banners.reject', $banner));
+});
+
+
+// Pages
+Breadcrumbs::register('admin.pages.index', function (Crumbs $crumbs) {
+    $crumbs->parent('admin.home');
+    $crumbs->push('Pages', route('admin.pages.index'));
+});
+Breadcrumbs::register('admin.pages.create', function (Crumbs $crumbs) {
+    $crumbs->parent('admin.pages.index');
+    $crumbs->push('Create', route('admin.pages.create'));
+});
+Breadcrumbs::register('admin.pages.show', function (Crumbs $crumbs, Page $page) {
+    if ($parent = $page->parent) {
+        $crumbs->parent('admin.pages.show', $parent);
+    } else {
+        $crumbs->parent('admin.pages.index');
+    }
+    $crumbs->push($page->title, route('admin.pages.show', $page));
+});
+Breadcrumbs::register('admin.pages.edit', function (Crumbs $crumbs, Page $page) {
+    $crumbs->parent('admin.pages.show', $page);
+    $crumbs->push('Edit', route('admin.pages.edit', $page));
 });

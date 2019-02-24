@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Entity\Adverts\Advert\Advert;
-use Illuminate\Database\Query\Builder;
 use Prettus\Repository\Eloquent\BaseRepository;
 
 class AdvertRepository extends BaseRepository

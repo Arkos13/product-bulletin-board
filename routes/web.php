@@ -114,10 +114,18 @@ Route::group(
         'middleware' => ['auth', 'can:admin-panel']
     ],
     function () {
+        Route::post('/ajax/upload/image', 'UploadController@image')->name('ajax.upload.image');
         Route::get('/', 'HomeController@index')->name('home');
         Route::resource('users', 'UserController');
         Route::post('/users/{user}/verify', 'UserController@verify')->name('users.verify');
         Route::resource('regions', 'RegionController');
+        Route::resource('pages', 'PageController');
+        Route::group(['prefix' => 'pages/{page}', 'as' => 'pages.'], function () {
+            Route::post('/first', 'PageController@first')->name('first');
+            Route::post('/up', 'PageController@up')->name('up');
+            Route::post('/down', 'PageController@down')->name('down');
+            Route::post('/last', 'PageController@last')->name('last');
+        });
         Route::group(['prefix' => 'adverts', 'as' => 'adverts.', 'namespace' => 'Adverts'], function() {
             Route::resource('categories', 'CategoryController');
             Route::group(['prefix' => 'categories/{category}', 'as' => 'categories.'], function () {
@@ -154,3 +162,4 @@ Route::group(
         });
     }
 );
+Route::get('/{page_path}', 'PageController@show')->name('page')->where('page_path', '.+');

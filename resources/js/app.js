@@ -36,3 +36,48 @@ $('.banner').each(function () {
             console.error(error);
         });
 });
+
+$(document).on('click', '.location-button', function () {
+    let button = $(this);
+    let target = $(button.data('target'));
+
+    window.geocode_callback = function (response) {
+        if (response.response.GeoObjectCollection.metaDataProperty.GeocoderResponseMetaData.found > 0) {
+            target.val(response.response.GeoObjectCollection.featureMember['0'].GeoObject.metaDataProperty.GeocoderMetaData.Address.formatted);
+        } else {
+            alert('Unable to detect your address.');
+        }
+    };
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            let location = position.coords.longitude + ',' + position.coords.latitude;
+            let url = 'https://geocode-maps.yandex.ru/1.x/?format=json&callback=geocode_callback&geocode=' + location;
+            let script = $('<script>').appendTo($('body'));
+            script.attr('src', url);
+        }, function (error) {
+            console.warn(error.message);
+        });
+    } else {
+        alert('Unable to detect your location.');
+    }
+});
+
+$('.summernote').summernote({
+    height: 300,
+    callbacks: {
+        onImageUpload: function(files) {
+            let editor = $(this);
+            let url = editor.data('image-url');
+            let data = new FormData();
+            data.append('file', files[0]);
+            axios
+                .post(url, data).then(function(response) {
+                editor.summernote('insertImage', response.data);
+            })
+                .catch(function (error) {
+                    console.error(error);
+                });
+        }
+    }
+});

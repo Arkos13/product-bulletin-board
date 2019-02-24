@@ -24,6 +24,9 @@
         "vue-template-compiler": "^2.5.22"
     },
     "dependencies": {
-        "font-awesome": "^4.7.0"
+        "font-awesome": "^4.7.0",
+        "global": "^4.3.2",
+        "summernote": "^0.8.11",
+        "yarn": "^1.13.0"
     }
 }
